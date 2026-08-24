@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dar Libsa — Vêtements & chaussures</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+
+  <div data-include="partials/header.html"></div>
+
+  <main>
+    <section class="hero container">
+      <div>
+        <span class="hero-eyebrow">Collection en cours</span>
+        <h1>Des pièces taillées pour la vie de tous les jours.</h1>
+        <p>T-shirts, sacs, chaussures et sandales — chaque produit se voit en 3D avant d'être dans votre panier.</p>
+        <a href="products.html" class="btn btn-brass">Voir la collection</a>
+      </div>
+      <div class="hero-visual"></div>
+    </section>
+
+    <div class="zellige-divider"></div>
+
+    <section class="container" style="padding: 3.5rem 0;">
+      <h2 class="section-title">Catégories</h2>
+      <p class="section-sub">Quatre familles de produits, une seule exigence de qualité.</p>
+      <div class="cat-grid">
+        <a class="cat-card" href="products.html?category=t-shirts">
+          <span class="num">01</span>
+          <h3>T-shirts</h3>
+          <p>Coupes classiques, tailles XS à XXL.</p>
+        </a>
+        <a class="cat-card" href="products.html?category=sacs">
+          <span class="num">02</span>
+          <h3>Sacs</h3>
+          <p>Quotidien, week-end, bandoulière.</p>
+        </a>
+        <a class="cat-card" href="products.html?category=chaussures">
+          <span class="num">03</span>
+          <h3>Chaussures</h3>
+          <p>Du 36 au 45, vue 3D à 360°.</p>
+        </a>
+        <a class="cat-card" href="products.html?category=sandales">
+          <span class="num">04</span>
+          <h3>Sandales</h3>
+          <p>Légères, pensées pour l'été.</p>
+        </a>
+      </div>
+    </section>
+
+    <section class="container" style="padding-bottom: 4rem;">
+      <h2 class="section-title">Nouveautés</h2>
+      <p class="section-sub">Les derniers arrivages, en stock.</p>
+      <div class="product-grid" data-product-grid aria-busy="true"></div>
+    </section>
+  </main>
+
+  <div data-include="partials/footer.html"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/partials.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const grid = document.querySelector("[data-product-grid]");
+      try {
+        const products = await api.getProducts({ sort: "newest", limit: 8 });
+        grid.innerHTML = products.length
+          ? products.map(p => `
+            <a class="product-card" href="product-detail.html?slug=${p.slug}">
+              <div class="thumb">
+                ${p.on_sale ? '<span class="tag">Promo</span>' : ''}
+                <img src="${p.image || 'assets/img/placeholder.jpg'}" alt="${p.name}" loading="lazy" />
+              </div>
+              <h4>${p.name}</h4>
+              <div class="price">${Number(p.base_price).toFixed(2)} MAD</div>
+            </a>`).join("")
+          : '<p class="section-sub">Le catalogue arrive bientôt.</p>';
+      } catch {
+        grid.innerHTML = '<p class="section-sub">Le catalogue arrive bientôt.</p>';
+      } finally {
+        grid.removeAttribute("aria-busy");
+      }
+    });
+  </script>
+</body>
+</html>
